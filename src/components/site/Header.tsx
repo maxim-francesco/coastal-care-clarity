@@ -48,12 +48,14 @@ export function Header() {
               <Phone size={14} strokeWidth={2.25} />
               Call
             </a>
-            <Link
-              to="/contact"
-              className="hidden md:inline-flex btn-pill btn-primary !h-9 !px-4 !text-[14px]"
-            >
-              Get a quote
-            </Link>
+            <div className="hidden md:block">
+              <Link
+                to="/contact"
+                className="btn-pill btn-primary !h-9 !px-4 !text-[14px]"
+              >
+                Get a quote
+              </Link>
+            </div>
             <button
               className="md:hidden inline-flex h-12 w-12 items-center justify-center -mr-2 text-foreground"
               onClick={() => setOpen((v) => !v)}
