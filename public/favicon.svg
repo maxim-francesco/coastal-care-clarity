@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0080ff" />
+      <stop offset="100%" stop-color="#005bbf" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#bg-grad)" />
+  <!-- Styled double curve representing coastal waves and Care initials -->
+  <path d="M22 10.5 C19.5 8, 14.5 8, 11.5 11 C8.5 14, 8.5 18, 11.5 21 C14.5 24, 19.5 24, 22 21.5" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+  <path d="M13 16 C15 14.5, 17 14.5, 19 16" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.9" />
+</svg>
