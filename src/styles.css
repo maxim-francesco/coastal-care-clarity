@@ -239,3 +239,11 @@ body {
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+@keyframes cursor-blink {
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: cursor-blink 0.9s step-end infinite;
+}

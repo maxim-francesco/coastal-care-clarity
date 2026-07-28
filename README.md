@@ -1,29 +1,42 @@
-# Welcome to your Lovable project
+# Coastal Care Home Services
 
-This project was built with [Lovable](https://lovable.dev).
+A modern, high-end web application for Coastal Care Home Services in Southwest Florida. Offering residential cleaning, vacation turnovers, home management, and home watch.
 
-## Build with Lovable
+## Technologies Used
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+- **Framework**: TanStack Start (React, Vite, Nitro SSR)
+- **Styling**: Tailwind CSS v4
+- **Language**: TypeScript
+- **State Management**: TanStack Query (React Query)
+- **Routing**: TanStack Router
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Development Setup
 
-## Development
+To run this project locally, ensure you have Node.js and bun (or npm) installed.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+### Installation
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+# Install dependencies
+bun install
+# or
+npm install
+```
+
+### Run Locally
+
+```sh
+# Start development server
+bun run dev
+# or
 npm run dev
 ```
 
-## Built with
+### Production Build
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+```sh
+# Build the production bundle
+bun run build
+# or
+npm run build
+```
