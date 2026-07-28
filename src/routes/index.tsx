@@ -79,42 +79,43 @@ function ScrollReveal({
 }
 
 function Home() {
-  const verbs = ["Cleaned", "Watched", "Managed", "Looked after"];
-  const [currentVerbIndex, setCurrentVerbIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
+  const [currentVerbIndex, setCurrentVerbIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [typingSpeed, setTypingSpeed] = useState(150);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    const fullText = verbs[currentVerbIndex];
+    const verbs = ["Cleaned", "Watched", "Managed", "Looked after"];
+    const currentVerb = verbs[currentVerbIndex];
 
-    const handleType = () => {
+    const tick = () => {
       if (!isDeleting) {
-        setDisplayText(fullText.substring(0, displayText.length + 1));
-        setTypingSpeed(100);
-
-        if (displayText === fullText) {
-          // Pause at the end of typing
-          timer = setTimeout(() => setIsDeleting(true), 2200);
-          return;
+        if (displayText === currentVerb) {
+          setIsDeleting(true);
+        } else {
+          setDisplayText(currentVerb.substring(0, displayText.length + 1));
         }
       } else {
-        setDisplayText(fullText.substring(0, displayText.length - 1));
-        setTypingSpeed(55);
-
         if (displayText === "") {
           setIsDeleting(false);
           setCurrentVerbIndex((prev) => (prev + 1) % verbs.length);
-          setTypingSpeed(250); // pause before typing next word
-          return;
+        } else {
+          setDisplayText(currentVerb.substring(0, displayText.length - 1));
         }
       }
-
-      timer = setTimeout(handleType, typingSpeed);
     };
 
-    timer = setTimeout(handleType, typingSpeed);
+    // Determine speed based on status
+    let speed = 100;
+    if (isDeleting) {
+      speed = 55;
+    } else if (displayText === currentVerb) {
+      speed = 2200; // pause when fully typed
+    } else if (displayText === "") {
+      speed = 250; // pause before typing next word
+    }
+
+    const timer = setTimeout(tick, speed);
+    return () => clearTimeout(timer);
   }, [displayText, isDeleting, currentVerbIndex]);
 
   const timelineRef = useRef<HTMLDivElement>(null);
