@@ -28,22 +28,15 @@ function ServicesPage() {
     <>
       <section className="bg-white pt-14 pb-10 md:pt-24 md:pb-16">
         <div className="mx-auto max-w-4xl px-5 text-center">
-          <h1 className="h-display text-[38px] md:text-[72px]">
-            What I do.
-          </h1>
+          <h1 className="h-display text-[38px] md:text-[72px]">What I do.</h1>
           <p className="mt-5 text-[19px] md:text-[21px] text-muted-foreground max-w-2xl mx-auto">
-            Four services, all done personally. Pick one, or combine —
-            whichever fits your home.
+            Four services, all done personally. Pick one, or combine — whichever fits your home.
           </p>
         </div>
       </section>
 
       {services.map((s, i) => (
-        <Section
-          key={s.id}
-          id={s.id}
-          tone={i % 2 === 0 ? "grey" : "white"}
-        >
+        <Section key={s.id} id={s.id} tone={i % 2 === 0 ? "grey" : "white"}>
           <div
             className={`grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center ${
               i % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""
@@ -52,7 +45,7 @@ function ServicesPage() {
             <div className="relative rounded-[28px] overflow-hidden aspect-[4/3]">
               <img
                 src={s.image}
-                alt=""
+                alt={s.name}
                 loading="lazy"
                 width={1200}
                 height={900}
@@ -65,10 +58,7 @@ function ServicesPage() {
             <div>
               <h2 className="h-display text-[32px] md:text-[48px]">{s.name}</h2>
               {s.paragraphs.map((p) => (
-                <p
-                  key={p}
-                  className="mt-4 text-[17px] text-muted-foreground max-w-lg"
-                >
+                <p key={p} className="mt-4 text-[17px] text-muted-foreground max-w-lg">
                   {p}
                 </p>
               ))}
@@ -77,15 +67,8 @@ function ServicesPage() {
               </p>
               <ul className="mt-4 space-y-2.5">
                 {s.includes.map((it) => (
-                  <li
-                    key={it}
-                    className="flex items-start gap-3 text-[16px] text-foreground"
-                  >
-                    <Check
-                      size={18}
-                      strokeWidth={2.25}
-                      className="mt-1 shrink-0 text-accent"
-                    />
+                  <li key={it} className="flex items-start gap-3 text-[16px] text-foreground">
+                    <Check size={18} strokeWidth={2.25} className="mt-1 shrink-0 text-accent" />
                     {it}
                   </li>
                 ))}

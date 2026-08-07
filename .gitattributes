@@ -1,0 +1,2 @@
+# Normalize line endings to LF on checkin, prevents CRLF lint noise on Windows
+* text=auto eol=lf

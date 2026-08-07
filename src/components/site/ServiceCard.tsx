@@ -16,7 +16,7 @@ export function ServiceCard({ s }: { s: Service }) {
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={s.image}
-          alt=""
+          alt={s.name}
           loading="lazy"
           width={1200}
           height={900}
@@ -29,9 +29,7 @@ export function ServiceCard({ s }: { s: Service }) {
       <div className="p-6 flex-1 flex flex-col">
         <Icon size={20} strokeWidth={1.5} className="text-foreground mb-3" />
         <h3 className="text-[22px] font-semibold tracking-tight">{s.name}</h3>
-        <p className="mt-2 text-[15px] text-muted-foreground line-clamp-2">
-          {s.short}
-        </p>
+        <p className="mt-2 text-[15px] text-muted-foreground line-clamp-2">{s.short}</p>
         <div className="mt-5">
           <Link to="/services" hash={s.id} className="link-arrow">
             Learn more

@@ -74,10 +74,7 @@ function ContactPage() {
               <p className="mt-3 text-muted-foreground text-[16px]">
                 Thanks — I'll get back to you within one business day.
               </p>
-              <button
-                onClick={() => setSent(false)}
-                className="mt-6 btn-pill btn-secondary"
-              >
+              <button onClick={() => setSent(false)} className="mt-6 btn-pill btn-secondary">
                 Send another
               </button>
             </div>
@@ -88,20 +85,10 @@ function ContactPage() {
               </Field>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Email" error={errors.email}>
-                  <input
-                    name="email"
-                    type="email"
-                    className={inputBase}
-                    autoComplete="email"
-                  />
+                  <input name="email" type="email" className={inputBase} autoComplete="email" />
                 </Field>
                 <Field label="Phone" error={errors.phone}>
-                  <input
-                    name="phone"
-                    type="tel"
-                    className={inputBase}
-                    autoComplete="tel"
-                  />
+                  <input name="phone" type="tel" className={inputBase} autoComplete="tel" />
                 </Field>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -137,18 +124,40 @@ function ContactPage() {
                 </select>
               </Field>
               <Field label="Message">
-                <textarea
-                  name="message"
-                  rows={5}
-                  className={`${inputBase} !min-h-[140px] py-3`}
-                />
+                <textarea name="message" rows={5} className={`${inputBase} !min-h-[140px] py-3`} />
               </Field>
 
               <div>
-                <p className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground mb-3">
+                <p
+                  id="preferred-contact-label"
+                  className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground mb-3"
+                >
                   Preferred contact
                 </p>
-                <div className="flex flex-wrap gap-2" role="radiogroup">
+                <div
+                  className="flex flex-wrap gap-2"
+                  role="radiogroup"
+                  aria-labelledby="preferred-contact-label"
+                  onKeyDown={(e) => {
+                    const currentIndex = contactMethods.indexOf(method);
+                    let nextIndex = currentIndex;
+                    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                      e.preventDefault();
+                      nextIndex = (currentIndex + 1) % contactMethods.length;
+                    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                      e.preventDefault();
+                      nextIndex =
+                        (currentIndex - 1 + contactMethods.length) % contactMethods.length;
+                    } else {
+                      return;
+                    }
+                    const nextMethod = contactMethods[nextIndex];
+                    setMethod(nextMethod);
+                    const buttons =
+                      e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="radio"]');
+                    buttons[nextIndex]?.focus();
+                  }}
+                >
                   {contactMethods.map((m) => {
                     const active = method === m;
                     return (
@@ -157,6 +166,7 @@ function ContactPage() {
                         type="button"
                         role="radio"
                         aria-checked={active}
+                        tabIndex={active ? 0 : -1}
                         onClick={() => setMethod(m)}
                         className={`h-12 px-6 rounded-full text-[15px] font-medium border transition-colors ${
                           active
@@ -210,8 +220,7 @@ function ContactPage() {
             <p className="mt-1 text-[17px]">{site.hours}</p>
           </div>
           <p className="text-[14px] text-muted-foreground max-w-xs">
-            Most messages get a response within one business day. If it's
-            urgent, please call.
+            Most messages get a response within one business day. If it's urgent, please call.
           </p>
         </aside>
       </div>
@@ -230,9 +239,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-[13px] font-medium text-muted-foreground mb-2">
-        {label}
-      </span>
+      <span className="block text-[13px] font-medium text-muted-foreground mb-2">{label}</span>
       {children}
       {error && (
         <span className="mt-1.5 block text-[13px] text-[color:var(--color-destructive)]">
