@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { Section } from "@/components/site/Section";
-import { services } from "@/content/site";
+import { getServicesAndPricing } from "@/server/services";
+
 
 export const Route = createFileRoute("/services")({
+  loader: () => getServicesAndPricing(),
   head: () => ({
     meta: [
       { title: "Services — Coastal Care Home Services" },
@@ -23,7 +25,9 @@ export const Route = createFileRoute("/services")({
   component: ServicesPage,
 });
 
+
 function ServicesPage() {
+  const { servicesForUi } = Route.useLoaderData();
   return (
     <>
       <section className="bg-white pt-14 pb-10 md:pt-24 md:pb-16">
@@ -35,7 +39,7 @@ function ServicesPage() {
         </div>
       </section>
 
-      {services.map((s, i) => (
+      {servicesForUi.map((s, i) => (
         <Section key={s.id} id={s.id} tone={i % 2 === 0 ? "grey" : "white"}>
           <div
             className={`grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center ${

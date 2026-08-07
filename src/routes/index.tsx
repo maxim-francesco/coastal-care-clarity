@@ -5,15 +5,16 @@ import heroImg from "@/assets/hero.jpg";
 import { Section } from "@/components/site/Section";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import {
-  services,
   quotes,
   whyMe,
   howVisitWorks,
-  pricing,
   site,
 } from "@/content/site";
+import { getServicesAndPricing } from "@/server/services";
+
 
 export const Route = createFileRoute("/")({
+  loader: () => getServicesAndPricing(),
   head: () => ({
     meta: [
       { title: "Coastal Care Home Services — Naples, FL" },
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
+
 
 function ScrollReveal({
   children,
@@ -79,9 +81,11 @@ function ScrollReveal({
 }
 
 function Home() {
+  const { servicesForUi, pricingCardsForUi } = Route.useLoaderData();
   const [displayText, setDisplayText] = useState("");
   const [currentVerbIndex, setCurrentVerbIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+
 
   useEffect(() => {
     const verbs = ["Cleaned", "Watched", "Managed", "Looked after"];
@@ -225,7 +229,7 @@ function Home() {
           </p>
         </div>
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-          {services.map((s) => (
+          {servicesForUi.map((s) => (
             <ServiceCard key={s.id} s={s} />
           ))}
         </div>
@@ -302,7 +306,7 @@ function Home() {
         </ScrollReveal>
         
         <div className="mt-12 max-w-3xl mx-auto flex flex-col gap-4">
-          {pricing.cards.map((c, i) => (
+          {pricingCardsForUi.map((c, i) => (
             <ScrollReveal key={c.id} delay={i * 80}>
               <Link
                 to="/pricing"

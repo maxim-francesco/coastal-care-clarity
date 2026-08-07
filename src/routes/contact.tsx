@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Section } from "@/components/site/Section";
-import { site, services } from "@/content/site";
+import { site } from "@/content/site";
+import { getServicesAndPricing } from "@/server/services";
+
 
 export const Route = createFileRoute("/contact")({
+  loader: () => getServicesAndPricing(),
   head: () => ({
     meta: [
       { title: "Contact — Coastal Care Home Services" },
@@ -22,6 +25,7 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+
 const propertySizes = [
   "Under 1,500 sq ft",
   "1,500 – 2,500 sq ft",
@@ -32,7 +36,9 @@ const propertySizes = [
 const contactMethods = ["Text", "Call", "Email"] as const;
 
 function ContactPage() {
+  const { servicesForUi } = Route.useLoaderData();
   const [sent, setSent] = useState(false);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [method, setMethod] = useState<(typeof contactMethods)[number]>("Text");
 
@@ -107,7 +113,7 @@ function ContactPage() {
                     <option value="" disabled>
                       Choose a service
                     </option>
-                    {services.map((s) => (
+                    {servicesForUi.map((s) => (
                       <option key={s.id}>{s.name}</option>
                     ))}
                   </select>

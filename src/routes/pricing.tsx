@@ -3,8 +3,11 @@ import { Check } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Segmented } from "@/components/site/Segmented";
 import { pricing, site } from "@/content/site";
+import { getServicesAndPricing } from "@/server/services";
+
 
 export const Route = createFileRoute("/pricing")({
+  loader: () => getServicesAndPricing(),
   head: () => ({
     meta: [
       { title: "Pricing — Coastal Care Home Services" },
@@ -24,7 +27,9 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
+
 function PricingPage() {
+  const { pricingCardsForUi } = Route.useLoaderData();
   return (
     <>
       <section className="relative bg-white pt-14 pb-10 md:pt-24 md:pb-16 overflow-hidden">
@@ -44,7 +49,7 @@ function PricingPage() {
 
       <Section tone="white" className="!pt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-          {pricing.cards.map((c) => {
+          {pricingCardsForUi.map((c) => {
             const featured = c.featured;
             return (
               <div
