@@ -30,6 +30,7 @@ import {
   ArrowUp,
   ArrowDown,
   X,
+  Menu,
   Check,
   Archive,
   MessageSquare,
@@ -227,6 +228,14 @@ function AdminDashboardPage() {
 
   // Tab State
   const [tab, setTab] = useState<"services" | "leads" | "faqs" | "testimonials" | "settings">("services");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   // Lead filter & expanded states
   const [statusFilter, setStatusFilter] = useState<"all" | "new" | "read" | "archived">("all");
@@ -718,8 +727,8 @@ function AdminDashboardPage() {
               </span>
             </div>
             
-            {/* Tabs */}
-            <nav className="flex items-center gap-2 sm:gap-4 border-l border-border pl-2 sm:pl-4 overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar">
+            {/* Desktop-only Tabs */}
+            <nav className="hidden md:flex items-center gap-2 sm:gap-4 border-l border-border pl-2 sm:pl-4 overflow-x-auto max-w-[50vw] sm:max-w-none no-scrollbar">
               <button
                 onClick={() => setTab("services")}
                 className={`text-[13px] md:text-[14px] font-medium transition-colors cursor-pointer whitespace-nowrap ${
@@ -777,7 +786,9 @@ function AdminDashboardPage() {
               </button>
             </nav>
           </div>
-          <div className="flex items-center gap-4 sm:gap-8">
+          
+          {/* Desktop-only Profile & Logout */}
+          <div className="hidden md:flex items-center gap-4 sm:gap-8">
             <span className="hidden sm:inline text-[14px] text-muted-foreground">
               {user?.email}
             </span>
@@ -788,8 +799,120 @@ function AdminDashboardPage() {
               Log out
             </button>
           </div>
+
+          {/* Mobile-only Hamburger Menu Toggle */}
+          <button
+            className="md:hidden inline-flex h-10 w-10 items-center justify-center -mr-2 text-foreground cursor-pointer"
+            onClick={() => setIsMobileMenuOpen((v) => !v)}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </header>
+
+      {/* Mobile full-screen glass menu dropdown overlay */}
+      {isMobileMenuOpen && (
+        <>
+          {/* Backdrop for click outside */}
+          <div
+            className="fixed inset-0 z-40 bg-black/10 md:hidden animate-fade-in"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Dropdown panel */}
+          <div className="glass fixed top-12 left-4 right-4 z-50 md:hidden rounded-2xl p-6 flex flex-col gap-6 animate-in fade-in slide-in-from-top-4 duration-200">
+            <nav className="flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  setTab("services");
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`flex items-center justify-between text-left text-[18px] font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer min-h-[44px] ${
+                  tab === "services"
+                    ? "bg-accent/10 text-accent font-bold"
+                    : "text-foreground hover:bg-surface"
+                }`}
+              >
+                <span>Services</span>
+              </button>
+              <button
+                onClick={() => {
+                  setTab("leads");
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`flex items-center justify-between text-left text-[18px] font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer min-h-[44px] ${
+                  tab === "leads"
+                    ? "bg-accent/10 text-accent font-bold"
+                    : "text-foreground hover:bg-surface"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  Leads
+                  {newLeadsCount > 0 && (
+                    <span className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-white leading-none">
+                      {newLeadsCount}
+                    </span>
+                  )}
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  setTab("faqs");
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`flex items-center justify-between text-left text-[18px] font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer min-h-[44px] ${
+                  tab === "faqs"
+                    ? "bg-accent/10 text-accent font-bold"
+                    : "text-foreground hover:bg-surface"
+                }`}
+              >
+                <span>FAQs</span>
+              </button>
+              <button
+                onClick={() => {
+                  setTab("testimonials");
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`flex items-center justify-between text-left text-[18px] font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer min-h-[44px] ${
+                  tab === "testimonials"
+                    ? "bg-accent/10 text-accent font-bold"
+                    : "text-foreground hover:bg-surface"
+                }`}
+              >
+                <span>Testimonials</span>
+              </button>
+              <button
+                onClick={() => {
+                  setTab("settings");
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`flex items-center justify-between text-left text-[18px] font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer min-h-[44px] ${
+                  tab === "settings"
+                    ? "bg-accent/10 text-accent font-bold"
+                    : "text-foreground hover:bg-surface"
+                }`}
+              >
+                <span>Settings</span>
+              </button>
+            </nav>
+            <div className="hairline-t pt-5 flex flex-col gap-4">
+              <div className="text-[13px] text-muted-foreground px-4">
+                Logged in as <span className="text-foreground font-medium block overflow-hidden text-ellipsis">{user?.email}</span>
+              </div>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="btn-pill btn-secondary w-full !h-11 !text-[15px] cursor-pointer"
+              >
+                Log out
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Main Content Dashboard */}
       <main className="pt-24 pb-12 px-5 max-w-6xl mx-auto">
