@@ -29,6 +29,41 @@ export interface DBService {
   updated_at?: string;
 }
 
+export interface DBFaq {
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DBTestimonial {
+  id: string;
+  text: string;
+  who: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DBSiteSettings {
+  id: number;
+  brand: string;
+  owner: string;
+  phone: string;
+  phone_href: string;
+  email: string;
+  hours: string;
+  since: string;
+  cities: string[];
+  area_note: string;
+  about_bio: string[];
+  updated_at?: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -36,6 +71,24 @@ export interface Database {
         Row: DBService;
         Insert: Omit<DBService, "created_at" | "updated_at">;
         Update: Partial<Omit<DBService, "created_at" | "updated_at">>;
+        Relationships: [];
+      };
+      faqs: {
+        Row: DBFaq;
+        Insert: Omit<DBFaq, "created_at" | "updated_at">;
+        Update: Partial<Omit<DBFaq, "created_at" | "updated_at">>;
+        Relationships: [];
+      };
+      testimonials: {
+        Row: DBTestimonial;
+        Insert: Omit<DBTestimonial, "created_at" | "updated_at">;
+        Update: Partial<Omit<DBTestimonial, "created_at" | "updated_at">>;
+        Relationships: [];
+      };
+      site_settings: {
+        Row: DBSiteSettings;
+        Insert: Omit<DBSiteSettings, "updated_at">;
+        Update: Partial<Omit<DBSiteSettings, "updated_at">>;
         Relationships: [];
       };
     };

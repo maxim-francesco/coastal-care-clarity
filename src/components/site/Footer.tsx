@@ -1,7 +1,15 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 import { site } from "@/content/site";
+import type { UiSiteSettings } from "@/server/services";
 
 export function Footer() {
+  const settings = useLoaderData({ from: "__root__" }) as UiSiteSettings;
+  const brand = settings?.brand ?? site.brand;
+  const phone = settings?.phone ?? site.phone;
+  const phoneHref = settings?.phoneHref ?? site.phoneHref;
+  const email = settings?.email ?? site.email;
+  const hours = settings?.hours ?? site.hours;
+
   return (
     <footer className="bg-[color:var(--surface)] hairline-t mt-24 pb-32 md:pb-12">
       <div className="mx-auto max-w-6xl px-5 py-14 text-[13px] text-muted-foreground">
@@ -72,16 +80,16 @@ export function Footer() {
             <p className="text-foreground font-medium mb-3">Contact</p>
             <ul className="space-y-2">
               <li>
-                <a href={site.phoneHref} className="block py-3.5 md:py-0">
-                  {site.phone}
+                <a href={phoneHref} className="block py-3.5 md:py-0">
+                  {phone}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${site.email}`} className="block py-3.5 md:py-0">
-                  {site.email}
+                <a href={`mailto:${email}`} className="block py-3.5 md:py-0">
+                  {email}
                 </a>
               </li>
-              <li>{site.hours}</li>
+              <li>{hours}</li>
             </ul>
             <div className="mt-4 flex gap-4">
               <a href="#" aria-label="Facebook" className="inline-block py-3.5 md:py-0">
@@ -93,7 +101,7 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-10 hairline-t pt-6">© 2026 {site.brand} · Licensed &amp; Insured</div>
+        <div className="mt-10 hairline-t pt-6">© 2026 {brand} · Licensed &amp; Insured</div>
       </div>
     </footer>
   );

@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
-import { areaNote, site } from "@/content/site";
+import { areaNote as staticAreaNote, site } from "@/content/site";
+import type { UiSiteSettings } from "@/server/services";
 
 export const Route = createFileRoute("/service-areas")({
   head: () => ({
@@ -23,6 +24,10 @@ export const Route = createFileRoute("/service-areas")({
 });
 
 function AreasPage() {
+  const settings = useLoaderData({ from: "__root__" }) as UiSiteSettings;
+  const cities = settings?.cities ?? site.cities;
+  const areaNote = settings?.areaNote ?? staticAreaNote;
+
   return (
     <>
       <Section tone="white">
@@ -35,7 +40,7 @@ function AreasPage() {
           </p>
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
-          {site.cities.map((c) => (
+          {cities.map((c) => (
             <span
               key={c}
               className="pill-chip !h-12 !px-6 !text-[17px] font-medium"

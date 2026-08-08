@@ -1,9 +1,14 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 import { Menu, Phone, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { site } from "@/content/site";
+import type { UiSiteSettings } from "@/server/services";
 
 export function Header() {
+  const settings = useLoaderData({ from: "__root__" }) as UiSiteSettings;
+  const phone = settings?.phone ?? site.phone;
+  const phoneHref = settings?.phoneHref ?? site.phoneHref;
+  
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -41,9 +46,9 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <a
-              href={site.phoneHref}
+              href={phoneHref}
               className="btn-pill btn-primary md:hidden !h-11 !px-4 !text-[14px]"
-              aria-label={`Call ${site.phone}`}
+              aria-label={`Call ${phone}`}
             >
               <Phone size={14} strokeWidth={2.25} />
               Call
@@ -86,8 +91,8 @@ export function Header() {
           </nav>
           <div className="hairline-t pt-6 pb-8">
             <p className="text-[13px] text-muted-foreground">Call directly</p>
-            <a href={site.phoneHref} className="text-[24px] font-semibold text-accent">
-              {site.phone}
+            <a href={phoneHref} className="text-[24px] font-semibold text-accent">
+              {phone}
             </a>
           </div>
         </div>

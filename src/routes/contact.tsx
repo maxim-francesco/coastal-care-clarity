@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useState } from "react";
 import { Section } from "@/components/site/Section";
 import { site } from "@/content/site";
-import { getServicesAndPricing } from "@/server/services";
+import { getServicesAndPricing, type UiSiteSettings } from "@/server/services";
 import { submitLead } from "@/server/leads";
 
 
@@ -38,6 +38,13 @@ const contactMethods = ["Text", "Call", "Email"] as const;
 
 function ContactPage() {
   const { servicesForUi } = Route.useLoaderData();
+  const settings = useLoaderData({ from: "__root__" }) as UiSiteSettings;
+  const cities = settings?.cities ?? site.cities;
+  const phone = settings?.phone ?? site.phone;
+  const phoneHref = settings?.phoneHref ?? site.phoneHref;
+  const email = settings?.email ?? site.email;
+  const hours = settings?.hours ?? site.hours;
+
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -132,7 +139,7 @@ function ContactPage() {
                     <option value="" disabled>
                       Choose a city
                     </option>
-                    {site.cities.map((c) => (
+                    {cities.map((c) => (
                       <option key={c}>{c}</option>
                     ))}
                   </select>
@@ -241,10 +248,10 @@ function ContactPage() {
               Call or text
             </p>
             <a
-              href={site.phoneHref}
+              href={phoneHref}
               className="mt-1 block text-[28px] font-semibold tracking-tight text-accent"
             >
-              {site.phone}
+              {phone}
             </a>
           </div>
           <div>
@@ -252,17 +259,17 @@ function ContactPage() {
               Email
             </p>
             <a
-              href={`mailto:${site.email}`}
+              href={`mailto:${email}`}
               className="mt-1 block text-[19px] font-medium text-foreground"
             >
-              {site.email}
+              {email}
             </a>
           </div>
           <div>
             <p className="text-[13px] uppercase tracking-wider text-muted-foreground font-medium">
               Hours
             </p>
-            <p className="mt-1 text-[17px]">{site.hours}</p>
+            <p className="mt-1 text-[17px]">{hours}</p>
           </div>
           <p className="text-[14px] text-muted-foreground max-w-xs">
             Most messages get a response within one business day. If it's urgent, please call.

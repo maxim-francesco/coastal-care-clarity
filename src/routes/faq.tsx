@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
 import { FaqAccordion } from "@/components/site/Accordion";
-import { faqs } from "@/content/site";
+import { getFaqs } from "@/server/services";
 
 export const Route = createFileRoute("/faq")({
+  loader: () => getFaqs(),
   head: () => ({
     meta: [
       { title: "FAQ — Coastal Care Home Services" },
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/faq")({
 });
 
 function FaqPage() {
+  const faqs = Route.useLoaderData();
   return (
     <>
       <Section tone="white">

@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLoaderData } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Segmented } from "@/components/site/Segmented";
 import { pricing, site } from "@/content/site";
-import { getServicesAndPricing } from "@/server/services";
+import { getServicesAndPricing, type UiSiteSettings } from "@/server/services";
 
 
 export const Route = createFileRoute("/pricing")({
@@ -30,6 +30,10 @@ export const Route = createFileRoute("/pricing")({
 
 function PricingPage() {
   const { pricingCardsForUi } = Route.useLoaderData();
+  const settings = useLoaderData({ from: "__root__" }) as UiSiteSettings;
+  const phone = settings?.phone ?? site.phone;
+  const phoneHref = settings?.phoneHref ?? site.phoneHref;
+
   return (
     <>
       <section className="relative bg-white pt-14 pb-10 md:pt-24 md:pb-16 overflow-hidden">
@@ -155,10 +159,10 @@ function PricingPage() {
             </Link>
           </div>
           <a
-            href={site.phoneHref}
+            href={phoneHref}
             className="mt-4 block text-[15px] text-muted-foreground"
           >
-            or call {site.phone}
+            or call {phone}
           </a>
         </div>
       </Section>

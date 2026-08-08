@@ -15,6 +15,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { StickyBar } from "@/components/site/StickyBar";
 import { AuthProvider } from "@/lib/auth";
+import { getSiteSettings } from "@/server/services";
 
 function NotFoundComponent() {
   return (
@@ -68,6 +69,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
+    loader: () => getSiteSettings(),
     head: () => ({
       meta: [
         { charSet: "utf-8" },

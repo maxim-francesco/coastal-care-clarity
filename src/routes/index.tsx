@@ -1,20 +1,29 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLoaderData } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { Eye, Search, Droplet, FileText, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
 import { Section } from "@/components/site/Section";
 import { ServiceCard } from "@/components/site/ServiceCard";
 import {
-  quotes,
   whyMe,
   howVisitWorks,
   site,
 } from "@/content/site";
-import { getServicesAndPricing } from "@/server/services";
+import { getServicesAndPricing, getTestimonials, type UiSiteSettings } from "@/server/services";
 
 
 export const Route = createFileRoute("/")({
-  loader: () => getServicesAndPricing(),
+  loader: async () => {
+    const [servicesData, testimonials] = await Promise.all([
+      getServicesAndPricing(),
+      getTestimonials(),
+    ]);
+    return {
+      servicesForUi: servicesData.servicesForUi,
+      pricingCardsForUi: servicesData.pricingCardsForUi,
+      testimonials,
+    };
+  },
   head: () => ({
     meta: [
       { title: "Coastal Care Home Services — Naples, FL" },
@@ -81,7 +90,12 @@ function ScrollReveal({
 }
 
 function Home() {
-  const { servicesForUi, pricingCardsForUi } = Route.useLoaderData();
+  const { servicesForUi, pricingCardsForUi, testimonials } = Route.useLoaderData();
+  const settings = useLoaderData({ from: "__root__" }) as UiSiteSettings;
+  const phone = settings?.phone ?? site.phone;
+  const phoneHref = settings?.phoneHref ?? site.phoneHref;
+  const cities = settings?.cities ?? site.cities;
+
   const [displayText, setDisplayText] = useState("");
   const [currentVerbIndex, setCurrentVerbIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -425,7 +439,7 @@ function Home() {
           </h2>
         </div>
         <div className="mt-8 flex flex-wrap gap-3">
-          {site.cities.map((c) => (
+          {cities.map((c) => (
             <span key={c} className="pill-chip">
               {c}
             </span>
@@ -439,8 +453,8 @@ function Home() {
       {/* QUOTES */}
       <Section tone="white">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
-          {quotes.map((q) => (
-            <figure key={q.who}>
+          {testimonials.map((q) => (
+            <figure key={q.id || q.who}>
               <blockquote className="text-[24px] md:text-[28px] font-medium tracking-tight text-foreground leading-snug">
                 “{q.text}”
               </blockquote>
@@ -467,10 +481,10 @@ function Home() {
             </Link>
           </div>
           <a
-            href={site.phoneHref}
+            href={phoneHref}
             className="mt-4 block text-[15px] text-muted-foreground"
           >
-            or call {site.phone}
+            or call {phone}
           </a>
         </div>
       </Section>

@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import portrait from "@/assets/portrait.jpg";
 import { Section } from "@/components/site/Section";
 import { site } from "@/content/site";
+import type { UiSiteSettings } from "@/server/services";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -24,6 +25,14 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
+  const settings = useLoaderData({ from: "__root__" }) as UiSiteSettings;
+  const owner = settings?.owner ?? site.owner;
+  const brand = settings?.brand ?? site.brand;
+  const since = settings?.since ?? site.since;
+  const aboutBio = settings?.aboutBio ?? [];
+
+  const ownerFirstName = owner.split(" ")[0];
+
   return (
     <>
       <Section tone="white">
@@ -31,7 +40,7 @@ function AboutPage() {
           <div className="rounded-[28px] overflow-hidden aspect-[4/5] max-w-md">
             <img
               src={portrait}
-              alt="Portrait of Maria Reyes, owner of Coastal Care"
+              alt={`Portrait of ${owner}, owner of ${brand}`}
               width={1000}
               height={1200}
               className="h-full w-full object-cover"
@@ -39,25 +48,35 @@ function AboutPage() {
           </div>
           <div>
             <h1 className="h-display text-[38px] md:text-[64px]">
-              Hi, I'm Maria.
+              Hi, I'm {ownerFirstName}.
             </h1>
-            <p className="mt-6 text-[17px] text-muted-foreground">
-              I started Coastal Care in 2019 after years of taking care of
-              other people's homes for a big company that didn't take care of
-              them. I wanted to work differently — one person, small number of
-              clients, personal attention, no rotating crews.
-            </p>
-            <p className="mt-4 text-[17px] text-muted-foreground">
-              What I care about is simple. Your home should feel calm when you
-              walk in the door, and looked after when you're not there. If I
-              see something small becoming something big, I tell you the same
-              day.
-            </p>
-            <p className="mt-4 text-[17px] text-muted-foreground">
-              I work with a small number of families across Naples, Bonita
-              Springs, Estero, Fort Myers, and Marco Island. If we're a good
-              fit, I'd love to help.
-            </p>
+            {aboutBio.length > 0 ? (
+              aboutBio.map((paragraph, index) => (
+                <p key={index} className={`text-[17px] text-muted-foreground ${index === 0 ? "mt-6" : "mt-4"}`}>
+                  {paragraph}
+                </p>
+              ))
+            ) : (
+              <>
+                <p className="mt-6 text-[17px] text-muted-foreground">
+                  I started Coastal Care in 2019 after years of taking care of
+                  other people's homes for a big company that didn't take care of
+                  them. I wanted to work differently — one person, small number of
+                  clients, personal attention, no rotating crews.
+                </p>
+                <p className="mt-4 text-[17px] text-muted-foreground">
+                  What I care about is simple. Your home should feel calm when you
+                  walk in the door, and looked after when you're not there. If I
+                  see something small becoming something big, I tell you the same
+                  day.
+                </p>
+                <p className="mt-4 text-[17px] text-muted-foreground">
+                  I work with a small number of families across Naples, Bonita
+                  Springs, Estero, Fort Myers, and Marco Island. If we're a good
+                  fit, I'd love to help.
+                </p>
+              </>
+            )}
           </div>
         </div>
       </Section>
@@ -68,7 +87,7 @@ function AboutPage() {
             "Licensed & Insured in Florida",
             "Background checked",
             "English & Spanish",
-            site.since,
+            since,
           ].map((i) => (
             <li
               key={i}
