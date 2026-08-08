@@ -67,7 +67,7 @@ export const Route = createFileRoute("/admin/")({
   loader: async () => {
     const [services, leads, faqs, testimonials, settings] = await Promise.all([
       listAllServicesAdmin(),
-      listLeads(),
+      listLeads({ data: "all" }),
       listAllFaqsAdmin(),
       listAllTestimonialsAdmin(),
       getSettingsAdmin(),
@@ -223,6 +223,8 @@ function AdminDashboardPage() {
   const navigate = useNavigate();
   const router = useRouter();
 
+
+
   // Tab State
   const [tab, setTab] = useState<"services" | "leads" | "faqs" | "testimonials" | "settings">("services");
 
@@ -302,7 +304,10 @@ function AdminDashboardPage() {
 
   const handleUpdateLeadStatus = async (id: string, nextStatus: "new" | "read" | "archived") => {
     try {
-      const res = await updateLeadStatus({ data: { id, status: nextStatus } });
+      const res = await updateLeadStatus({
+        data: { id, status: nextStatus, accessToken: session?.access_token || undefined },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       if (res.ok) {
         toast.success(`Lead status updated to ${nextStatus}`);
         await router.invalidate();
@@ -318,7 +323,10 @@ function AdminDashboardPage() {
     if (!deleteLeadId) return;
     setDeletingLead(true);
     try {
-      const res = await deleteLead({ data: deleteLeadId });
+      const res = await deleteLead({
+        data: { id: deleteLeadId, accessToken: session?.access_token || undefined },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       if (res.ok) {
         toast.success("Lead deleted successfully");
         await router.invalidate();
@@ -380,7 +388,10 @@ function AdminDashboardPage() {
     if (!deleteId) return;
     setDeleting(true);
     try {
-      const res = await deleteService({ data: deleteId });
+      const res = await deleteService({
+        data: { id: deleteId, accessToken: session?.access_token || undefined },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       if (res.ok) {
         toast.success("Service deleted successfully");
         await router.invalidate();
@@ -434,10 +445,18 @@ function AdminDashboardPage() {
               featured: payload.featured,
               is_active: payload.is_active,
             },
+            accessToken: session?.access_token || undefined,
           },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
         });
       } else {
-        res = await createService({ data: payload });
+        res = await createService({
+          data: {
+            ...payload,
+            accessToken: session?.access_token || undefined,
+          },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        });
       }
 
       if (res.ok) {
@@ -486,7 +505,10 @@ function AdminDashboardPage() {
     if (!deleteFaqId) return;
     setDeletingFaq(true);
     try {
-      const res = await deleteFaq({ data: deleteFaqId });
+      const res = await deleteFaq({
+        data: { id: deleteFaqId, accessToken: session?.access_token || undefined },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       if (res.ok) {
         toast.success("FAQ deleted successfully");
         await router.invalidate();
@@ -514,10 +536,18 @@ function AdminDashboardPage() {
           data: {
             id: faqToEdit.id,
             input: faqForm,
+            accessToken: session?.access_token || undefined,
           },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
         });
       } else {
-        res = await createFaq({ data: faqForm });
+        res = await createFaq({
+          data: {
+            ...faqForm,
+            accessToken: session?.access_token || undefined,
+          },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        });
       }
 
       if (res.ok) {
@@ -566,7 +596,10 @@ function AdminDashboardPage() {
     if (!deleteTestimonialId) return;
     setDeletingTestimonial(true);
     try {
-      const res = await deleteTestimonial({ data: deleteTestimonialId });
+      const res = await deleteTestimonial({
+        data: { id: deleteTestimonialId, accessToken: session?.access_token || undefined },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       if (res.ok) {
         toast.success("Testimonial deleted successfully");
         await router.invalidate();
@@ -594,10 +627,18 @@ function AdminDashboardPage() {
           data: {
             id: testimonialToEdit.id,
             input: testimonialForm,
+            accessToken: session?.access_token || undefined,
           },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
         });
       } else {
-        res = await createTestimonial({ data: testimonialForm });
+        res = await createTestimonial({
+          data: {
+            ...testimonialForm,
+            accessToken: session?.access_token || undefined,
+          },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        });
       }
 
       if (res.ok) {
@@ -621,7 +662,13 @@ function AdminDashboardPage() {
     setSubmittingSettings(true);
 
     try {
-      const res = await updateSettings({ data: settingsForm });
+      const res = await updateSettings({
+        data: {
+          ...settingsForm,
+          accessToken: session?.access_token || undefined,
+        },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
       if (res.ok) {
         toast.success("Site settings updated successfully");
         await router.invalidate();

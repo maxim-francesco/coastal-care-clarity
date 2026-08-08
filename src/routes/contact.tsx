@@ -81,6 +81,7 @@ function ContactPage() {
           property_size: String(fd.get("size") || "") || null,
           message: String(fd.get("message") || ""),
           method: method,
+          website: String(fd.get("website") || "") || null,
         };
 
         const res = await submitLead({ data: payload });
@@ -122,6 +123,17 @@ function ContactPage() {
             </div>
           ) : (
             <form onSubmit={onSubmit} noValidate className="space-y-4">
+              {/* Honeypot field - invisible, non-focusable */}
+              <div className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  placeholder="Website"
+                />
+              </div>
+
               <Field label="Name" error={errors.name}>
                 <input name="name" className={inputBase} autoComplete="name" />
               </Field>

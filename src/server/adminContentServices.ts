@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/lib/supabase.admin.server";
 import { z } from "zod";
 import type { DBFaq, DBTestimonial, DBSiteSettings } from "@/lib/supabase.server";
+import { requireAdmin } from "./authGuard";
 
 // FAQ validation schema
 export const faqSchema = z.object({
@@ -11,9 +12,19 @@ export const faqSchema = z.object({
   is_active: z.boolean(),
 });
 
+export const createFaqSchema = faqSchema.extend({
+  accessToken: z.string().optional(),
+});
+
 export const updateFaqSchema = z.object({
   id: z.string().uuid("Invalid FAQ ID format"),
   input: faqSchema,
+  accessToken: z.string().optional(),
+});
+
+export const deleteFaqSchema = z.object({
+  id: z.string().uuid("Invalid FAQ ID format"),
+  accessToken: z.string().optional(),
 });
 
 // Testimonial validation schema
@@ -24,9 +35,19 @@ export const testimonialSchema = z.object({
   is_active: z.boolean(),
 });
 
+export const createTestimonialSchema = testimonialSchema.extend({
+  accessToken: z.string().optional(),
+});
+
 export const updateTestimonialSchema = z.object({
   id: z.string().uuid("Invalid Testimonial ID format"),
   input: testimonialSchema,
+  accessToken: z.string().optional(),
+});
+
+export const deleteTestimonialSchema = z.object({
+  id: z.string().uuid("Invalid Testimonial ID format"),
+  accessToken: z.string().optional(),
 });
 
 // Settings validation schema
@@ -43,10 +64,13 @@ export const settingsSchema = z.object({
   about_bio: z.array(z.string().min(1, "Bio paragraph cannot be empty")),
 });
 
+export const updateSettingsSchema = settingsSchema.extend({
+  accessToken: z.string().optional(),
+});
+
 // FAQs Admin CRUD Actions
 export const listAllFaqsAdmin = createServerFn({ method: "GET" })
   .handler(async (): Promise<DBFaq[]> => {
-    // TODO: harden — verify admin session server-side
     const { data, error } = await supabaseAdmin
       .from("faqs")
       .select("*")
@@ -61,10 +85,10 @@ export const listAllFaqsAdmin = createServerFn({ method: "GET" })
   });
 
 export const createFaq = createServerFn({ method: "POST" })
-  .validator((data: unknown) => faqSchema.parse(data))
-  .handler(async ({ data: input }): Promise<{ ok: true; data: DBFaq } | { ok: false; error: string }> => {
-    // TODO: harden — verify admin session server-side
+  .validator((data: unknown) => createFaqSchema.parse(data))
+  .handler(async ({ data: { accessToken, ...input } }): Promise<{ ok: true; data: DBFaq } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { data, error } = await (supabaseAdmin.from("faqs") as any)
         .insert(input)
         .select()
@@ -84,9 +108,9 @@ export const createFaq = createServerFn({ method: "POST" })
 
 export const updateFaq = createServerFn({ method: "POST" })
   .validator((data: unknown) => updateFaqSchema.parse(data))
-  .handler(async ({ data: { id, input } }): Promise<{ ok: true; data: DBFaq } | { ok: false; error: string }> => {
-    // TODO: harden — verify admin session server-side
+  .handler(async ({ data: { id, input, accessToken } }): Promise<{ ok: true; data: DBFaq } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { data, error } = await (supabaseAdmin.from("faqs") as any)
         .update(input)
         .eq("id", id)
@@ -106,10 +130,10 @@ export const updateFaq = createServerFn({ method: "POST" })
   });
 
 export const deleteFaq = createServerFn({ method: "POST" })
-  .validator((id: unknown) => z.string().uuid().parse(id))
-  .handler(async ({ data: id }): Promise<{ ok: true } | { ok: false; error: string }> => {
-    // TODO: harden — verify admin session server-side
+  .validator((data: unknown) => deleteFaqSchema.parse(data))
+  .handler(async ({ data: { id, accessToken } }): Promise<{ ok: true } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { error } = await supabaseAdmin
         .from("faqs")
         .delete()
@@ -130,7 +154,6 @@ export const deleteFaq = createServerFn({ method: "POST" })
 // Testimonials Admin CRUD Actions
 export const listAllTestimonialsAdmin = createServerFn({ method: "GET" })
   .handler(async (): Promise<DBTestimonial[]> => {
-    // TODO: harden — verify admin session server-side
     const { data, error } = await supabaseAdmin
       .from("testimonials")
       .select("*")
@@ -145,10 +168,10 @@ export const listAllTestimonialsAdmin = createServerFn({ method: "GET" })
   });
 
 export const createTestimonial = createServerFn({ method: "POST" })
-  .validator((data: unknown) => testimonialSchema.parse(data))
-  .handler(async ({ data: input }): Promise<{ ok: true; data: DBTestimonial } | { ok: false; error: string }> => {
-    // TODO: harden — verify admin session server-side
+  .validator((data: unknown) => createTestimonialSchema.parse(data))
+  .handler(async ({ data: { accessToken, ...input } }): Promise<{ ok: true; data: DBTestimonial } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { data, error } = await (supabaseAdmin.from("testimonials") as any)
         .insert(input)
         .select()
@@ -168,9 +191,9 @@ export const createTestimonial = createServerFn({ method: "POST" })
 
 export const updateTestimonial = createServerFn({ method: "POST" })
   .validator((data: unknown) => updateTestimonialSchema.parse(data))
-  .handler(async ({ data: { id, input } }): Promise<{ ok: true; data: DBTestimonial } | { ok: false; error: string }> => {
-    // TODO: harden — verify admin session server-side
+  .handler(async ({ data: { id, input, accessToken } }): Promise<{ ok: true; data: DBTestimonial } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { data, error } = await (supabaseAdmin.from("testimonials") as any)
         .update(input)
         .eq("id", id)
@@ -190,10 +213,10 @@ export const updateTestimonial = createServerFn({ method: "POST" })
   });
 
 export const deleteTestimonial = createServerFn({ method: "POST" })
-  .validator((id: unknown) => z.string().uuid().parse(id))
-  .handler(async ({ data: id }): Promise<{ ok: true } | { ok: false; error: string }> => {
-    // TODO: harden — verify admin session server-side
+  .validator((data: unknown) => deleteTestimonialSchema.parse(data))
+  .handler(async ({ data: { id, accessToken } }): Promise<{ ok: true } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { error } = await supabaseAdmin
         .from("testimonials")
         .delete()
@@ -214,7 +237,6 @@ export const deleteTestimonial = createServerFn({ method: "POST" })
 // Settings Admin Actions
 export const getSettingsAdmin = createServerFn({ method: "GET" })
   .handler(async (): Promise<DBSiteSettings> => {
-    // TODO: harden — verify admin session server-side
     const { data, error } = await supabaseAdmin
       .from("site_settings")
       .select("*")
@@ -234,10 +256,10 @@ export const getSettingsAdmin = createServerFn({ method: "GET" })
   });
 
 export const updateSettings = createServerFn({ method: "POST" })
-  .validator((data: unknown) => settingsSchema.parse(data))
-  .handler(async ({ data: input }): Promise<{ ok: true; data: DBSiteSettings } | { ok: false; error: string }> => {
-    // TODO: harden — verify admin session server-side
+  .validator((data: unknown) => updateSettingsSchema.parse(data))
+  .handler(async ({ data: { accessToken, ...input } }): Promise<{ ok: true; data: DBSiteSettings } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { data, error } = await (supabaseAdmin.from("site_settings") as any)
         .update(input)
         .eq("id", 1)

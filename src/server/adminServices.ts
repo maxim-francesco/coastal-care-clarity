@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/lib/supabase.admin.server";
 import { z } from "zod";
 import type { DBService } from "@/lib/supabase.server";
+import { requireAdmin } from "./authGuard";
 
 // Validation schema matching the services table columns
 export const serviceSchema = z.object({
@@ -21,15 +22,24 @@ export const serviceSchema = z.object({
   is_active: z.boolean(),
 });
 
+export const createServiceSchema = serviceSchema.extend({
+  accessToken: z.string().optional(),
+});
+
 export const updateServiceSchema = z.object({
   id: z.string().min(1),
   input: serviceSchema.omit({ id: true }),
+  accessToken: z.string().optional(),
+});
+
+export const deleteServiceSchema = z.object({
+  id: z.string().min(1),
+  accessToken: z.string().optional(),
 });
 
 // Fetch all services (active + inactive) ordered by sort_order
 export const listAllServicesAdmin = createServerFn({ method: "GET" })
   .handler(async (): Promise<DBService[]> => {
-    // TODO: Harden: verify Supabase session/JWT server-side before mutating (later).
     const { data, error } = await supabaseAdmin
       .from("services")
       .select("*")
@@ -45,10 +55,10 @@ export const listAllServicesAdmin = createServerFn({ method: "GET" })
 
 // Create a new service
 export const createService = createServerFn({ method: "POST" })
-  .validator((data: unknown) => serviceSchema.parse(data))
-  .handler(async ({ data: input }): Promise<{ ok: true; data: DBService } | { ok: false; error: string }> => {
-    // TODO: Harden: verify Supabase session/JWT server-side before mutating (later).
+  .validator((data: unknown) => createServiceSchema.parse(data))
+  .handler(async ({ data: { accessToken, ...input } }): Promise<{ ok: true; data: DBService } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       // Check if ID (slug) already exists
       const { data: existing } = await supabaseAdmin
         .from("services")
@@ -80,9 +90,9 @@ export const createService = createServerFn({ method: "POST" })
 // Update an existing service
 export const updateService = createServerFn({ method: "POST" })
   .validator((data: unknown) => updateServiceSchema.parse(data))
-  .handler(async ({ data: { id, input } }): Promise<{ ok: true; data: DBService } | { ok: false; error: string }> => {
-    // TODO: Harden: verify Supabase session/JWT server-side before mutating (later).
+  .handler(async ({ data: { id, input, accessToken } }): Promise<{ ok: true; data: DBService } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { data, error } = await (supabaseAdmin.from("services") as any)
         .update(input)
         .eq("id", id)
@@ -103,10 +113,10 @@ export const updateService = createServerFn({ method: "POST" })
 
 // Delete a service
 export const deleteService = createServerFn({ method: "POST" })
-  .validator((id: unknown) => z.string().parse(id))
-  .handler(async ({ data: id }): Promise<{ ok: true } | { ok: false; error: string }> => {
-    // TODO: Harden: verify Supabase session/JWT server-side before mutating (later).
+  .validator((data: unknown) => deleteServiceSchema.parse(data))
+  .handler(async ({ data: { id, accessToken } }): Promise<{ ok: true } | { ok: false; error: string }> => {
     try {
+      await requireAdmin(accessToken);
       const { error } = await supabaseAdmin
         .from("services")
         .delete()
@@ -123,3 +133,4 @@ export const deleteService = createServerFn({ method: "POST" })
       return { ok: false, error: e.message || "An unexpected error occurred." };
     }
   });
+

@@ -94,6 +94,24 @@ export interface Database {
         Update: Partial<Omit<DBSiteSettings, "updated_at">>;
         Relationships: [];
       };
+      lead_submits: {
+        Row: {
+          id: string;
+          ip_hash: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          ip_hash: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          ip_hash?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
