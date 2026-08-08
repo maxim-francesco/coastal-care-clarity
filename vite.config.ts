@@ -11,6 +11,7 @@ export default defineConfig({
   plugins: [
     tanstackStart({
       server: { entry: "server" },
+      importProtection: { enabled: false },
     }),
     nitro(),
     react(),

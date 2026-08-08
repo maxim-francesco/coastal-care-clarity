@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Section } from "@/components/site/Section";
 import { site } from "@/content/site";
 import { getServicesAndPricing } from "@/server/services";
+import { submitLead } from "@/server/leads";
 
 
 export const Route = createFileRoute("/contact")({
@@ -38,6 +39,8 @@ const contactMethods = ["Text", "Call", "Email"] as const;
 function ContactPage() {
   const { servicesForUi } = Route.useLoaderData();
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [method, setMethod] = useState<(typeof contactMethods)[number]>("Text");
@@ -45,9 +48,10 @@ function ContactPage() {
   const inputBase =
     "block w-full min-h-[52px] rounded-[12px] bg-[color:var(--surface)] border-0 px-4 text-[17px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]";
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const currentTarget = e.currentTarget;
+    const fd = new FormData(currentTarget);
     const next: Record<string, string> = {};
     if (!fd.get("name")) next.name = "Please add your name.";
     const email = String(fd.get("email") ?? "");
@@ -56,10 +60,35 @@ function ContactPage() {
     if (!fd.get("city")) next.city = "Pick a city.";
     if (!fd.get("service")) next.service = "Pick a service.";
     setErrors(next);
+    
     if (Object.keys(next).length === 0) {
-      console.log("Contact form:", Object.fromEntries(fd.entries()), { method });
-      setSent(true);
-      e.currentTarget.reset();
+      setSubmitting(true);
+      setServerError(null);
+      try {
+        const payload = {
+          name: String(fd.get("name")),
+          email: email,
+          phone: String(fd.get("phone")),
+          city: String(fd.get("city") || "") || null,
+          service: String(fd.get("service") || "") || null,
+          property_size: String(fd.get("size") || "") || null,
+          message: String(fd.get("message") || ""),
+          method: method,
+        };
+
+        const res = await submitLead({ data: payload });
+        if (res.ok) {
+          setSent(true);
+          currentTarget.reset();
+        } else {
+          setServerError("Something went wrong sending your message. Please call us or try again.");
+        }
+      } catch (err) {
+        console.error("Error submitting contact form:", err);
+        setServerError("Something went wrong sending your message. Please call us or try again.");
+      } finally {
+        setSubmitting(false);
+      }
     }
   }
 
@@ -187,9 +216,19 @@ function ContactPage() {
                 </div>
               </div>
 
+              {serverError && (
+                <div className="p-4 text-[14px] text-[color:var(--color-destructive)] bg-[color:var(--color-destructive)]/10 border border-[color:var(--color-destructive)]/20 rounded-[10px] font-medium">
+                  {serverError}
+                </div>
+              )}
+
               <div className="pt-2">
-                <button type="submit" className="btn-pill btn-primary w-full md:w-auto">
-                  Send message
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="btn-pill btn-primary w-full md:w-auto disabled:opacity-50 cursor-pointer"
+                >
+                  {submitting ? "Sending..." : "Send message"}
                 </button>
               </div>
             </form>

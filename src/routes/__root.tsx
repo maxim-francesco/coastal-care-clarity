@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -13,6 +14,7 @@ import appCss from "../styles.css?url";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { StickyBar } from "@/components/site/StickyBar";
+import { AuthProvider } from "@/lib/auth";
 
 function NotFoundComponent() {
   return (
@@ -130,14 +132,29 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
+
+  if (isAdmin) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Outlet />
+        </AuthProvider>
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Header />
-      <main className="pt-12 md:pt-14 pb-24 md:pb-0">
-        <Outlet />
-      </main>
-      <Footer />
-      <StickyBar />
+      <AuthProvider>
+        <Header />
+        <main className="pt-12 md:pt-14 pb-24 md:pb-0">
+          <Outlet />
+        </main>
+        <Footer />
+        <StickyBar />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
