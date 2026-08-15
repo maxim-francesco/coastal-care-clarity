@@ -85,6 +85,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             content: "width=device-width, initial-scale=1, viewport-fit=cover",
           },
           { name: "theme-color", content: "#ffffff" },
+          {
+            name: "google-site-verification",
+            content: "tMOyqmhNHRIsMhjl7ah8bvECk4TtKHJHHVTl8mGYcgs",
+          },
           { title: "Coastal Care Home Services — Southwest Florida" },
           {
             name: "description",
