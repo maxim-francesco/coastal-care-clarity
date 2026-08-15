@@ -2,24 +2,63 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
 import { FaqAccordion } from "@/components/site/Accordion";
 import { getFaqs } from "@/server/services";
+import {
+  SITE_URL,
+  createBreadcrumbSchema,
+  createFaqSchema,
+} from "@/lib/seo-schema";
 
 export const Route = createFileRoute("/faq")({
   loader: () => getFaqs(),
-  head: () => ({
-    meta: [
-      { title: "FAQ — Coastal Care Home Services" },
-      {
-        name: "description",
-        content:
-          "Answers to common questions about cleaning, turnovers, home management, and home watch in Southwest Florida.",
-      },
-      { property: "og:title", content: "FAQ — Coastal Care" },
-      {
-        property: "og:description",
-        content: "Common questions about our services in Southwest Florida.",
-      },
-    ],
-  }),
+  head: (ctx) => {
+    const faqs = ctx.loaderData || [];
+    const breadcrumbSchema = createBreadcrumbSchema("FAQ", "/faq");
+    const faqSchema = createFaqSchema(faqs);
+
+    return {
+      meta: [
+        { title: "FAQ — Home Cleaning & Home Watch Questions | Coastal Care" },
+        {
+          name: "description",
+          content:
+            "Answers to frequent questions about home watch schedules, cleaning supplies, turnover coordination, and insurance in Southwest Florida.",
+        },
+        {
+          property: "og:title",
+          content: "FAQ — Home Cleaning & Home Watch Questions | Coastal Care",
+        },
+        {
+          property: "og:description",
+          content:
+            "Answers to frequent questions about home watch schedules, cleaning supplies, turnover coordination, and insurance in Southwest Florida.",
+        },
+        { property: "og:url", content: `${SITE_URL}/faq` },
+        { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: "FAQ — Home Cleaning & Home Watch Questions | Coastal Care",
+        },
+        {
+          name: "twitter:description",
+          content:
+            "Answers to frequent questions about home watch schedules, cleaning supplies, turnover coordination, and insurance in Southwest Florida.",
+        },
+        { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
+      ],
+      links: [{ rel: "canonical", href: `${SITE_URL}/faq` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(faqSchema),
+        },
+      ],
+    };
+  },
   component: FaqPage,
 });
 

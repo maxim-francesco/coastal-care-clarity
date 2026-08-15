@@ -2,27 +2,65 @@ import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useState } from "react";
 import { Section } from "@/components/site/Section";
 import { site } from "@/content/site";
-import { getServicesAndPricing, type UiSiteSettings } from "@/server/services";
+import { getServicesAndPricing, getSiteSettings, type UiSiteSettings } from "@/server/services";
 import { submitLead } from "@/server/leads";
-
+import { SITE_URL, createBreadcrumbSchema } from "@/lib/seo-schema";
 
 export const Route = createFileRoute("/contact")({
-  loader: () => getServicesAndPricing(),
-  head: () => ({
-    meta: [
-      { title: "Contact — Coastal Care Home Services" },
-      {
-        name: "description",
-        content:
-          "Get in touch with Maria Reyes at Coastal Care Home Services. Call, email, or send a message for a quote.",
-      },
-      { property: "og:title", content: "Contact — Coastal Care" },
-      {
-        property: "og:description",
-        content: "Reach Maria at Coastal Care for a quote — call, email, or form.",
-      },
-    ],
-  }),
+  loader: async () => {
+    const [servicesData, settings] = await Promise.all([
+      getServicesAndPricing(),
+      getSiteSettings(),
+    ]);
+    return {
+      servicesForUi: servicesData.servicesForUi,
+      settings,
+    };
+  },
+  head: (ctx) => {
+    const settings = (ctx.loaderData?.settings || {}) as UiSiteSettings;
+    const ownerName = settings?.owner || "Eugenia Bucur Grecu";
+    const ownerFirstName = ownerName.split(" ")[0];
+    const phone = settings?.phone || "(239) 571-4461";
+    const breadcrumbSchema = createBreadcrumbSchema("Contact", "/contact");
+
+    return {
+      meta: [
+        { title: `Contact ${ownerFirstName} — Get a Free Home Service Quote SWFL` },
+        {
+          name: "description",
+          content: `Contact ${ownerName} at Coastal Care Home Services for home watch, cleaning, or turnover quotes in Naples & SWFL. Call ${phone}.`,
+        },
+        {
+          property: "og:title",
+          content: `Contact ${ownerFirstName} — Get a Free Home Service Quote SWFL`,
+        },
+        {
+          property: "og:description",
+          content: `Contact ${ownerName} at Coastal Care Home Services for home watch, cleaning, or turnover quotes in Naples & SWFL. Call ${phone}.`,
+        },
+        { property: "og:url", content: `${SITE_URL}/contact` },
+        { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: `Contact ${ownerFirstName} — Get a Free Home Service Quote SWFL`,
+        },
+        {
+          name: "twitter:description",
+          content: `Contact ${ownerName} at Coastal Care Home Services for home watch, cleaning, or turnover quotes in Naples & SWFL. Call ${phone}.`,
+        },
+        { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
+      ],
+      links: [{ rel: "canonical", href: `${SITE_URL}/contact` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
+        },
+      ],
+    };
+  },
   component: ContactPage,
 });
 
@@ -42,7 +80,7 @@ function ContactPage() {
   const cities = settings?.cities ?? site.cities;
   const phone = settings?.phone ?? site.phone;
   const phoneHref = settings?.phoneHref ?? site.phoneHref;
-  const email = settings?.email ?? site.email;
+  const email = settings?.email;
   const hours = settings?.hours ?? site.hours;
 
   const [sent, setSent] = useState(false);
@@ -266,17 +304,19 @@ function ContactPage() {
               {phone}
             </a>
           </div>
-          <div>
-            <p className="text-[13px] uppercase tracking-wider text-muted-foreground font-medium">
-              Email
-            </p>
-            <a
-              href={`mailto:${email}`}
-              className="mt-1 block text-[19px] font-medium text-foreground"
-            >
-              {email}
-            </a>
-          </div>
+          {email && (
+            <div>
+              <p className="text-[13px] uppercase tracking-wider text-muted-foreground font-medium">
+                Email
+              </p>
+              <a
+                href={`mailto:${email}`}
+                className="mt-1 block text-[19px] font-medium text-foreground"
+              >
+                {email}
+              </a>
+            </div>
+          )}
           <div>
             <p className="text-[13px] uppercase tracking-wider text-muted-foreground font-medium">
               Hours

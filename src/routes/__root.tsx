@@ -16,6 +16,7 @@ import { Footer } from "@/components/site/Footer";
 import { StickyBar } from "@/components/site/StickyBar";
 import { AuthProvider } from "@/lib/auth";
 import { getSiteSettings } from "@/server/services";
+import { SITE_URL, createLocalBusinessSchema, createWebSiteSchema } from "@/lib/seo-schema";
 
 function NotFoundComponent() {
   return (
@@ -70,47 +71,79 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
     loader: () => getSiteSettings(),
-    head: () => ({
-      meta: [
-        { charSet: "utf-8" },
-        {
-          name: "viewport",
-          content: "width=device-width, initial-scale=1, viewport-fit=cover",
-        },
-        { title: "Coastal Care Home Services — Southwest Florida" },
-        {
-          name: "description",
-          content:
-            "One person looking after your Florida home. Cleaning, vacation turnovers, home management, and home watch across Naples, Bonita Springs, Estero, Fort Myers, and Marco Island.",
-        },
-        { name: "author", content: "Coastal Care Home Services" },
-        {
-          property: "og:title",
-          content: "Coastal Care Home Services — Southwest Florida",
-        },
-        {
-          property: "og:description",
-          content:
-            "Cleaning, vacation turnovers, home management, and home watch across SWFL — done by one person, every visit.",
-        },
-        { property: "og:type", content: "website" },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-      links: [
-        { rel: "stylesheet", href: appCss },
-        { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        {
-          rel: "preconnect",
-          href: "https://fonts.gstatic.com",
-          crossOrigin: "anonymous",
-        },
-        {
-          rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap",
-        },
-      ],
-    }),
+    head: (ctx) => {
+      const settings = ctx.loaderData;
+      const isAdmin = (ctx as any).match?.pathname?.startsWith("/admin") || (ctx as any).matches?.some((m: any) => m.pathname?.startsWith("/admin"));
+      const localBusinessSchema = createLocalBusinessSchema(settings);
+      const websiteSchema = createWebSiteSchema();
+
+      return {
+        meta: [
+          { charSet: "utf-8" },
+          {
+            name: "viewport",
+            content: "width=device-width, initial-scale=1, viewport-fit=cover",
+          },
+          { name: "theme-color", content: "#ffffff" },
+          { title: "Coastal Care Home Services — Southwest Florida" },
+          {
+            name: "description",
+            content:
+              "One person looking after your Florida home. Cleaning, vacation turnovers, home management, and home watch across Naples, Bonita Springs, Estero, Fort Myers, and Marco Island.",
+          },
+          { name: "author", content: "Coastal Care Home Services" },
+          { property: "og:site_name", content: "Coastal Care Home Services" },
+          {
+            property: "og:title",
+            content: "Coastal Care Home Services — Southwest Florida",
+          },
+          {
+            property: "og:description",
+            content:
+              "Cleaning, vacation turnovers, home management, and home watch across SWFL — done by one person, every visit.",
+          },
+          { property: "og:type", content: "website" },
+          { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
+          { name: "twitter:card", content: "summary_large_image" },
+          {
+            name: "twitter:title",
+            content: "Coastal Care Home Services — Southwest Florida",
+          },
+          {
+            name: "twitter:description",
+            content:
+              "Cleaning, vacation turnovers, home management, and home watch across SWFL.",
+          },
+          { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
+        ],
+        links: [
+          { rel: "stylesheet", href: appCss },
+          { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+          { rel: "preconnect", href: "https://fonts.googleapis.com" },
+          {
+            rel: "preconnect",
+            href: "https://fonts.gstatic.com",
+            crossOrigin: "anonymous",
+          },
+          {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap",
+          },
+        ],
+        scripts: isAdmin
+          ? []
+          : [
+              {
+                type: "application/ld+json",
+                children: JSON.stringify(localBusinessSchema),
+              },
+              {
+                type: "application/ld+json",
+                children: JSON.stringify(websiteSchema),
+              },
+            ],
+      };
+    },
     shellComponent: RootShell,
     component: RootComponent,
     notFoundComponent: NotFoundComponent,

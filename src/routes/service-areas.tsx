@@ -2,24 +2,55 @@ import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
 import { areaNote as staticAreaNote, site } from "@/content/site";
 import type { UiSiteSettings } from "@/server/services";
+import { SITE_URL, createBreadcrumbSchema } from "@/lib/seo-schema";
 
 export const Route = createFileRoute("/service-areas")({
-  head: () => ({
-    meta: [
-      { title: "Service Areas — Coastal Care Home Services" },
-      {
-        name: "description",
-        content:
-          "Serving Naples, Bonita Springs, Estero, Fort Myers, and Marco Island in Southwest Florida.",
-      },
-      { property: "og:title", content: "Service Areas — Coastal Care" },
-      {
-        property: "og:description",
-        content:
-          "Serving Naples, Bonita Springs, Estero, Fort Myers, and Marco Island.",
-      },
-    ],
-  }),
+  head: () => {
+    const breadcrumbSchema = createBreadcrumbSchema(
+      "Service Areas",
+      "/service-areas"
+    );
+
+    return {
+      meta: [
+        { title: "Service Areas — Naples, Bonita Springs, Estero & SWFL" },
+        {
+          name: "description",
+          content:
+            "Coastal Care serves Naples, Bonita Springs, Estero, Fort Myers, and Marco Island with premium home watch, cleaning, and turnover services.",
+        },
+        {
+          property: "og:title",
+          content: "Service Areas — Naples, Bonita Springs, Estero & SWFL",
+        },
+        {
+          property: "og:description",
+          content:
+            "Coastal Care serves Naples, Bonita Springs, Estero, Fort Myers, and Marco Island with premium home watch, cleaning, and turnover services.",
+        },
+        { property: "og:url", content: `${SITE_URL}/service-areas` },
+        { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: "Service Areas — Naples, Bonita Springs, Estero & SWFL",
+        },
+        {
+          name: "twitter:description",
+          content:
+            "Coastal Care serves Naples, Bonita Springs, Estero, Fort Myers, and Marco Island with premium home watch, cleaning, and turnover services.",
+        },
+        { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
+      ],
+      links: [{ rel: "canonical", href: `${SITE_URL}/service-areas` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
+        },
+      ],
+    };
+  },
   component: AreasPage,
 });
 

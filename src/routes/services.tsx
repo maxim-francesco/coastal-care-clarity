@@ -1,30 +1,78 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { Section } from "@/components/site/Section";
-import { getServicesAndPricing } from "@/server/services";
-
+import { getServicesAndPricing, getSiteSettings } from "@/server/services";
+import {
+  SITE_URL,
+  createBreadcrumbSchema,
+  createServiceSchema,
+} from "@/lib/seo-schema";
 
 export const Route = createFileRoute("/services")({
-  loader: () => getServicesAndPricing(),
-  head: () => ({
-    meta: [
-      { title: "Services — Coastal Care Home Services" },
-      {
-        name: "description",
-        content:
-          "Residential cleaning, vacation rental turnovers, home management, and home watch across Southwest Florida.",
-      },
-      { property: "og:title", content: "Services — Coastal Care" },
-      {
-        property: "og:description",
-        content:
-          "Cleaning, turnovers, management, and home watch — done by one person, every visit.",
-      },
-    ],
-  }),
+  loader: async () => {
+    const [servicesData, settings] = await Promise.all([
+      getServicesAndPricing(),
+      getSiteSettings(),
+    ]);
+    return {
+      servicesForUi: servicesData.servicesForUi,
+      settings,
+    };
+  },
+  head: (ctx) => {
+    const { servicesForUi, settings } = ctx.loaderData || {
+      servicesForUi: [],
+      settings: {} as any,
+    };
+    const breadcrumbSchema = createBreadcrumbSchema("Services", "/services");
+    const serviceSchemas = createServiceSchema(servicesForUi, settings);
+
+    return {
+      meta: [
+        { title: "Home Services & Cleaning — Naples & SWFL | Coastal Care" },
+        {
+          name: "description",
+          content:
+            "Residential cleaning, Airbnb turnovers, home management, and vacant home watch across Naples, Bonita Springs, Estero, Fort Myers, and Marco Island.",
+        },
+        {
+          property: "og:title",
+          content: "Home Services & Cleaning — Naples & SWFL | Coastal Care",
+        },
+        {
+          property: "og:description",
+          content:
+            "Residential cleaning, Airbnb turnovers, home management, and vacant home watch across Naples, Bonita Springs, Estero, Fort Myers, and Marco Island.",
+        },
+        { property: "og:url", content: `${SITE_URL}/services` },
+        { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: "Home Services & Cleaning — Naples & SWFL | Coastal Care",
+        },
+        {
+          name: "twitter:description",
+          content:
+            "Residential cleaning, Airbnb turnovers, home management, and vacant home watch across Naples, Bonita Springs, Estero, Fort Myers, and Marco Island.",
+        },
+        { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
+      ],
+      links: [{ rel: "canonical", href: `${SITE_URL}/services` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
+        },
+        ...serviceSchemas.map((schema) => ({
+          type: "application/ld+json" as const,
+          children: JSON.stringify(schema),
+        })),
+      ],
+    };
+  },
   component: ServicesPage,
 });
-
 
 function ServicesPage() {
   const { servicesForUi } = Route.useLoaderData();
@@ -47,14 +95,33 @@ function ServicesPage() {
             }`}
           >
             <div className="relative rounded-[28px] overflow-hidden aspect-[4/3]">
-              <img
-                src={s.image}
-                alt={s.name}
-                loading="lazy"
-                width={1200}
-                height={900}
-                className="h-full w-full object-cover"
-              />
+              <picture className="h-full w-full object-cover">
+                {s.imageVariants && (
+                  <>
+                    <source
+                      type="image/avif"
+                      srcSet={`${s.imageVariants.avif540} 540w, ${s.imageVariants.avif1080} 1080w`}
+                      sizes="(max-width: 768px) 100vw, 540px"
+                    />
+                    <source
+                      type="image/webp"
+                      srcSet={`${s.imageVariants.webp540} 540w, ${s.imageVariants.webp1080} 1080w`}
+                      sizes="(max-width: 768px) 100vw, 540px"
+                    />
+                  </>
+                )}
+                <img
+                  src={s.imageVariants ? s.imageVariants.fallback : s.image}
+                  srcSet={s.imageVariants ? `${s.imageVariants.jpg540} 540w, ${s.imageVariants.jpg1080} 1080w` : undefined}
+                  sizes="(max-width: 768px) 100vw, 540px"
+                  alt={s.name}
+                  loading="lazy"
+                  decoding="async"
+                  width={1200}
+                  height={900}
+                  className="h-full w-full object-cover"
+                />
+              </picture>
               <div className="glass absolute top-4 left-4 h-10 px-4 rounded-full inline-flex items-center text-[14px] font-medium">
                 {s.fromLabel}
               </div>

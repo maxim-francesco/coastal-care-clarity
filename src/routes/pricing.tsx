@@ -6,24 +6,53 @@ import { pricing, site } from "@/content/site";
 import { getServicesAndPricing, type UiSiteSettings } from "@/server/services";
 
 
+import { SITE_URL, createBreadcrumbSchema } from "@/lib/seo-schema";
+
 export const Route = createFileRoute("/pricing")({
   loader: () => getServicesAndPricing(),
-  head: () => ({
-    meta: [
-      { title: "Pricing — Coastal Care Home Services" },
-      {
-        name: "description",
-        content:
-          "Honest starting prices for residential cleaning, vacation turnovers, home management, and home watch in Southwest Florida.",
-      },
-      { property: "og:title", content: "Pricing — Coastal Care Home Services" },
-      {
-        property: "og:description",
-        content:
-          "Starting prices for cleaning, turnovers, management, and home watch across SWFL.",
-      },
-    ],
-  }),
+  head: () => {
+    const breadcrumbSchema = createBreadcrumbSchema("Pricing", "/pricing");
+
+    return {
+      meta: [
+        { title: "Transparent Pricing — Cleaning & Home Watch SWFL | Coastal Care" },
+        {
+          name: "description",
+          content:
+            "Honest starting rates for home cleaning, vacation rental turnovers, home management, and home watch in Naples, Bonita Springs, and Marco Island.",
+        },
+        {
+          property: "og:title",
+          content: "Transparent Pricing — Cleaning & Home Watch SWFL | Coastal Care",
+        },
+        {
+          property: "og:description",
+          content:
+            "Honest starting rates for home cleaning, vacation rental turnovers, home management, and home watch in Naples, Bonita Springs, and Marco Island.",
+        },
+        { property: "og:url", content: `${SITE_URL}/pricing` },
+        { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: "Transparent Pricing — Cleaning & Home Watch SWFL | Coastal Care",
+        },
+        {
+          name: "twitter:description",
+          content:
+            "Honest starting rates for home cleaning, vacation rental turnovers, home management, and home watch in Naples, Bonita Springs, and Marco Island.",
+        },
+        { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
+      ],
+      links: [{ rel: "canonical", href: `${SITE_URL}/pricing` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
+        },
+      ],
+    };
+  },
   component: PricingPage,
 });
 
