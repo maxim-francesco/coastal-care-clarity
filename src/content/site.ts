@@ -1,15 +1,40 @@
-// All copy and prices for Coastal Care Home Services — edit here.
+import cleaningAvif540 from "@/assets/cleaning-540w.avif";
+import cleaningAvif1080 from "@/assets/cleaning-1080w.avif";
+import cleaningWebp540 from "@/assets/cleaning-540w.webp";
+import cleaningWebp1080 from "@/assets/cleaning-1080w.webp";
+import cleaningJpg540 from "@/assets/cleaning-540w.jpg";
+import cleaningJpg1080 from "@/assets/cleaning-1080w.jpg";
 import cleaningImg from "@/assets/cleaning.jpg";
+
+import turnoverAvif540 from "@/assets/turnover-540w.avif";
+import turnoverAvif1080 from "@/assets/turnover-1080w.avif";
+import turnoverWebp540 from "@/assets/turnover-540w.webp";
+import turnoverWebp1080 from "@/assets/turnover-1080w.webp";
+import turnoverJpg540 from "@/assets/turnover-540w.jpg";
+import turnoverJpg1080 from "@/assets/turnover-1080w.jpg";
 import turnoverImg from "@/assets/turnover.jpg";
+
+import managementAvif540 from "@/assets/management-540w.avif";
+import managementAvif1080 from "@/assets/management-1080w.avif";
+import managementWebp540 from "@/assets/management-540w.webp";
+import managementWebp1080 from "@/assets/management-1080w.webp";
+import managementJpg540 from "@/assets/management-540w.jpg";
+import managementJpg1080 from "@/assets/management-1080w.jpg";
 import managementImg from "@/assets/management.jpg";
+
+import homewatchAvif540 from "@/assets/homewatch-540w.avif";
+import homewatchAvif1080 from "@/assets/homewatch-1080w.avif";
+import homewatchWebp540 from "@/assets/homewatch-540w.webp";
+import homewatchWebp1080 from "@/assets/homewatch-1080w.webp";
+import homewatchJpg540 from "@/assets/homewatch-540w.jpg";
+import homewatchJpg1080 from "@/assets/homewatch-1080w.jpg";
 import homewatchImg from "@/assets/homewatch.jpg";
 
 export const site = {
   brand: "Coastal Care Home Services",
-  owner: "Maria Reyes",
-  phone: "(239) 555-0142",
-  phoneHref: "tel:+12395550142",
-  email: "hello@coastalcarefl.com",
+  owner: "Eugenia Bucur Grecu",
+  phone: "(239) 571-4461",
+  phoneHref: "tel:+12395714461",
   hours: "Mon–Sat, 8am–5pm",
   since: "Serving Southwest Florida since 2019",
   cities: ["Naples", "Bonita Springs", "Estero", "Fort Myers", "Marco Island"],
@@ -24,12 +49,23 @@ export const site = {
   trust: ["Licensed & Insured", "Background checked", "Photo report after every visit"],
 } as const;
 
+export type ServiceImageVariants = {
+  avif540: string;
+  avif1080: string;
+  webp540: string;
+  webp1080: string;
+  jpg540: string;
+  jpg1080: string;
+  fallback: string;
+};
+
 export type Service = {
   id: "cleaning" | "turnover" | "management" | "home-watch";
   name: string;
   short: string;
   fromLabel: string;
   image: string;
+  imageVariants?: ServiceImageVariants;
   paragraphs: string[];
   includes: string[];
   goodFor: string;
@@ -42,6 +78,15 @@ export const services: Service[] = [
     short: "Recurring visits, deep cleans, and move-in or move-out days.",
     fromLabel: "from $140",
     image: cleaningImg,
+    imageVariants: {
+      avif540: cleaningAvif540,
+      avif1080: cleaningAvif1080,
+      webp540: cleaningWebp540,
+      webp1080: cleaningWebp1080,
+      jpg540: cleaningJpg540,
+      jpg1080: cleaningJpg1080,
+      fallback: cleaningImg,
+    },
     paragraphs: [
       "Weekly, bi-weekly, or monthly cleanings kept to a steady rhythm so your home always feels ready.",
       "Deep cleans and move-day service are billed separately with a clear scope before I start.",
@@ -62,6 +107,15 @@ export const services: Service[] = [
     short: "Between guests: clean, restock, restage, ready for check-in.",
     fromLabel: "from $115",
     image: turnoverImg,
+    imageVariants: {
+      avif540: turnoverAvif540,
+      avif1080: turnoverAvif1080,
+      webp540: turnoverWebp540,
+      webp1080: turnoverWebp1080,
+      jpg540: turnoverJpg540,
+      jpg1080: turnoverJpg1080,
+      fallback: turnoverImg,
+    },
     paragraphs: [
       "Same-day turnovers between check-out and check-in, done to a repeatable checklist so every guest walks into the same standard.",
       "I coordinate with your booking calendar and send a photo report before the next guest arrives.",
@@ -82,6 +136,15 @@ export const services: Service[] = [
     short: "Vendors, deliveries, contractors, and errands handled on your behalf.",
     fromLabel: "from $65/hr",
     image: managementImg,
+    imageVariants: {
+      avif540: managementAvif540,
+      avif1080: managementAvif1080,
+      webp540: managementWebp540,
+      webp1080: managementWebp1080,
+      jpg540: managementJpg540,
+      jpg1080: managementJpg1080,
+      fallback: managementImg,
+    },
     paragraphs: [
       "A single point of contact for the small things that pile up when you're busy or out of state: meeting the a/c tech, accepting a delivery, running an errand before you arrive.",
       "Billed hourly with a two-hour minimum, or on a monthly retainer for regular support.",
@@ -102,6 +165,15 @@ export const services: Service[] = [
     short: "Scheduled check-ins for vacant seasonal homes.",
     fromLabel: "from $65",
     image: homewatchImg,
+    imageVariants: {
+      avif540: homewatchAvif540,
+      avif1080: homewatchAvif1080,
+      webp540: homewatchWebp540,
+      webp1080: homewatchWebp1080,
+      jpg540: homewatchJpg540,
+      jpg1080: homewatchJpg1080,
+      fallback: homewatchImg,
+    },
     paragraphs: [
       "A calm, thorough walk-through of your empty home on a set schedule. I look for the things that quietly turn into big problems — humidity creeping up, a slow leak, pests, storm impact.",
       "You get a photo report after every visit, and a phone call the same day if anything needs your attention.",
@@ -246,7 +318,7 @@ export const whyMe = [
 
 export const quotes = [
   {
-    text: "Maria has watched our home for three summers. It's the first time I actually stop worrying when we fly north.",
+    text: "Eugenia has watched our home for three summers. It's the first time I actually stop worrying when we fly north.",
     who: "Linda H., Naples",
   },
   {

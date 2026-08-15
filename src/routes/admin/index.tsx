@@ -75,6 +75,9 @@ export const Route = createFileRoute("/admin/")({
     ]);
     return { services, leads, faqs, testimonials, settings };
   },
+  head: () => ({
+    meta: [{ name: "robots", content: "noindex, nofollow" }],
+  }),
   component: AdminDashboardPage,
 });
 

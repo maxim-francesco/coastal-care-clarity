@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Sitemap: https://coastalcarehome.us/sitemap.xml

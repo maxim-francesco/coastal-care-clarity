@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/login")({
+  head: () => ({
+    meta: [{ name: "robots", content: "noindex, nofollow" }],
+  }),
   component: AdminLoginPage,
 });
 

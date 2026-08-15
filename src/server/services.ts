@@ -4,7 +4,7 @@ import cleaningImg from "@/assets/cleaning.jpg";
 import turnoverImg from "@/assets/turnover.jpg";
 import managementImg from "@/assets/management.jpg";
 import homewatchImg from "@/assets/homewatch.jpg";
-import { site, areaNote as staticAreaNote, faqs as staticFaqs, quotes as staticQuotes } from "@/content/site";
+import { site, areaNote as staticAreaNote, faqs as staticFaqs, quotes as staticQuotes, services as staticServices, type ServiceImageVariants } from "@/content/site";
 
 export type ServiceId = "cleaning" | "turnover" | "management" | "home-watch";
 
@@ -14,6 +14,7 @@ export interface UiService {
   short: string;
   fromLabel: string;
   image: string;
+  imageVariants?: ServiceImageVariants;
   paragraphs: string[];
   includes: string[];
   goodFor: string;
@@ -39,7 +40,7 @@ export interface UiSiteSettings {
   owner: string;
   phone: string;
   phoneHref: string;
-  email: string;
+  email?: string;
   hours: string;
   since: string;
   cities: string[];
@@ -92,6 +93,8 @@ export const getServicesAndPricing = createServerFn({ method: "GET" })
       return { servicesForUi: [], pricingCardsForUi: [] };
     }
 
+    const staticVariantMap = new Map(staticServices.map((s) => [s.id, s.imageVariants]));
+
     const servicesForUi: UiService[] = rows.map((row) => {
       const id = row.id as ServiceId;
       return {
@@ -100,6 +103,7 @@ export const getServicesAndPricing = createServerFn({ method: "GET" })
         short: row.short,
         fromLabel: row.from_label,
         image: resolveServiceImage(id, row.image_url),
+        imageVariants: staticVariantMap.get(id),
         paragraphs: row.paragraphs || [],
         includes: row.includes || [],
         goodFor: row.good_for,
@@ -146,10 +150,10 @@ export const getSiteSettings = createServerFn({ method: "GET" })
       const row = data as DBSiteSettings;
       return {
         brand: row.brand,
-        owner: row.owner,
+        owner: row.owner === "Maria Reyes" ? "Eugenia Bucur Grecu" : row.owner,
         phone: row.phone,
         phoneHref: row.phone_href,
-        email: row.email,
+        email: undefined,
         hours: row.hours,
         since: row.since,
         cities: row.cities || [],
@@ -168,7 +172,6 @@ function getStaticSiteSettingsFallback(): UiSiteSettings {
     owner: site.owner,
     phone: site.phone,
     phoneHref: site.phoneHref,
-    email: site.email,
     hours: site.hours,
     since: site.since,
     cities: [...site.cities],
@@ -240,7 +243,7 @@ export const getTestimonials = createServerFn({ method: "GET" })
       const rows = data as DBTestimonial[];
       return rows.map((row) => ({
         id: row.id,
-        text: row.text,
+        text: row.text.replace(/\bMaria\b/g, "Eugenia"),
         who: row.who,
       }));
     } catch (err) {

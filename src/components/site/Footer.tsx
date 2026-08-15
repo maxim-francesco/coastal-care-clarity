@@ -7,7 +7,7 @@ export function Footer() {
   const brand = settings?.brand ?? site.brand;
   const phone = settings?.phone ?? site.phone;
   const phoneHref = settings?.phoneHref ?? site.phoneHref;
-  const email = settings?.email ?? site.email;
+  const email = settings?.email;
   const hours = settings?.hours ?? site.hours;
 
   return (
@@ -84,11 +84,13 @@ export function Footer() {
                   {phone}
                 </a>
               </li>
-              <li>
-                <a href={`mailto:${email}`} className="block py-3.5 md:py-0">
-                  {email}
-                </a>
-              </li>
+              {email && (
+                <li>
+                  <a href={`mailto:${email}`} className="block py-3.5 md:py-0">
+                    {email}
+                  </a>
+                </li>
+              )}
               <li>{hours}</li>
             </ul>
             <div className="mt-4 flex gap-4">
