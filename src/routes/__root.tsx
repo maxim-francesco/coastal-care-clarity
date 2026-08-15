@@ -108,6 +108,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           },
           { property: "og:type", content: "website" },
           { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
+          { property: "og:image:width", content: "1200" },
+          { property: "og:image:height", content: "630" },
+          { property: "og:image:type", content: "image/jpeg" },
+          {
+            property: "og:image:alt",
+            content:
+              "Coastal Care Home Services — Cleaning, Turnovers, Home Management, Home Watch in SWFL",
+          },
           { name: "twitter:card", content: "summary_large_image" },
           {
             name: "twitter:title",
@@ -119,6 +127,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               "Cleaning, vacation turnovers, home management, and home watch across SWFL.",
           },
           { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
+          {
+            name: "twitter:image:alt",
+            content:
+              "Coastal Care Home Services — Cleaning, Turnovers, Home Management, Home Watch in SWFL",
+          },
         ],
         links: [
           { rel: "stylesheet", href: appCss },
